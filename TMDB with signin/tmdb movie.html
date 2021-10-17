@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMDB MOVIE</title>
+    <style>
+        body{
+            background-image: url("https://wallpaper.dog/large/20474347.jpg");
+            background-size: cover;
+            color: white;
+        }
+        img{
+            width:100%;
+            height: 400px;
+            margin-left: 0%;
+            margin-top: 5%;
+        }
+        #data{
+            display: grid;
+            grid-template-columns: 20% 30%;
+            grid-gap: 1%;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        #data1{
+            display: grid;
+            grid-template-columns: 20% 20% 20% 20%;
+            grid-gap: 1%;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        h3{
+            color:orange;
+        }
+        h1{
+            margin-left: 40%;
+        }
+        button{
+           
+            padding: 30px 60px;
+            background-color: red;
+        }
+        #movies{
+            margin-left: 30%;
+            padding: 10px 100px;
+            width:171px;
+            height: 200px;
+            border: 1px solid black;
+            overflow: scroll;
+            border-top:none;
+            background-color: white;
+            color: black;
+        }
+        a{
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            text-align: right;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <a href="sign in page.html"><div id="user_toshow"></div></a>
+    <h1>Welcome To Movie House</h1>
+    
+    <button onclick="getMovie()">Press To See Popular Movies You Want To Watch</button>
+    <button onclick="gettopMovie()">Press To See Top Rated Movies You Want To Watch</button>
+    <button onclick="getupcomingMovie()">Press To See Upcoming Movies You Want To Watch</button>
+    
+    <div id="data"></div>
+    <div id="data1"></div>
+</body>
+
+<script>
+
+let parent=document.getElementById("data");
+let parent1=document.getElementById("data1");
+
+
+
+async function getMovie()
+    {
+        parent.innerHTML=null;
+        parent1.innerHTML=null;
+
+        let res=await fetch(`
+https://api.themoviedb.org/3/movie/popular?api_key=7f196b217e5144d6c4a5bab5413f120e&language=en-US&page=1`);
+
+        let data = await res.json();
+
+        console.log(data);
+
+        if(data.Response=="False")
+        {
+            showerr();
+        }
+
+        else{
+
+       showresults(data.results);
+       console.log(data.results);
+
+        }     
+   
+    }
+
+    async function getupcomingMovie()
+    {
+        parent.innerHTML=null;
+        parent1.innerHTML=null;
+
+        let res=await fetch(`
+        https://api.themoviedb.org/3/movie/upcoming?api_key=7f196b217e5144d6c4a5bab5413f120e&language=en-US&page=1`);
+
+        let data = await res.json();
+
+        console.log(data);
+
+        if(data.Response=="False")
+        {
+            showerr();
+        }
+
+        else{
+
+       showresults(data.results);
+       console.log(data.results);
+
+        }     
+   
+    }
+
+    async function gettopMovie()
+    {
+        parent.innerHTML=null;
+        parent1.innerHTML=null;
+
+        let res=await fetch(`
+        https://api.themoviedb.org/3/movie/top_rated?api_key=7f196b217e5144d6c4a5bab5413f120e&language=en-US&page=1`);
+
+        let data = await res.json();
+
+        console.log(data);
+
+        if(data.Response=="False")
+        {
+            showerr();
+        }
+
+        else{
+
+       showresults(data.results);
+       console.log(data.results);
+
+        }     
+   
+    }
+
+function showresults(result)
+{
+    parent.innerHTML=null; 
+    parent1.innerHTML=null; 
+    result.forEach(function(showing_result){
+    let div=document.createElement("div");
+    div.style.backgroundColor="black";
+    div.style.padding="3%";
+    let img_result=document.createElement("img");
+    let movie_title=document.createElement("h4");
+    movie_title.style.color="white";
+    movie_title.style.textAlign="center";
+    movie_title.textContent=showing_result.title;
+    img_result.src="https://image.tmdb.org/t/p/w500"+showing_result.poster_path;
+    div.append(img_result,movie_title);
+    parent1.append(div);
+    img_result.onclick=function(){
+        showmovie_data(showing_result);
+    }
+    
+    });
+    
+}
+
+function showmovie_data(data)
+{
+    parent.innerHTML=null;
+    parent1.innerHTML=null;
+let div=document.createElement("div");
+let img=document.createElement("img");
+let movie_title=document.createElement("h2");
+movie_title.textContent=data.title;
+let Release=document.createElement("h3");
+Release.textContent="Release Date : "+data.release_date;
+let Actors=document.createElement("h3");
+Actors.textContent="Description : "+data.overview;
+img.src="https://image.tmdb.org/t/p/w500"+data.poster_path;
+
+
+div.append(movie_title,Release,Actors);
+parent.append(img,div);
+}
+
+function showerr()
+{
+let div=document.createElement("div");
+let img=document.createElement("img"); 
+img.style.width="700px";
+let x=document.createElement("h2");
+x.style.color="black";
+x.textContent="Movie Not Found";
+img.src="https://klizos.com/wp-content/uploads/funny-404-error-page-GIF.gif";
+div.append(x);
+parent.append(img,div);
+}
+
+let user_sign=document.getElementById("user_toshow");
+
+if(localStorage.getItem("users")===null)
+{
+let p=document.createElement("div");
+p.textContent="Sign Up/Sign In";
+user_sign.append(p);
+}
+else{
+    let p=document.createElement("div");
+    let user_name=JSON.parse(localStorage.getItem("users"));
+    p.textContent=user_name[user_name.length-1];
+    user_sign.append(p); 
+}
+
+</script>
+</html>
